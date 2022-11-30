@@ -183,25 +183,7 @@
             });
         }
 
-        //maybe this should delete instead of removebutton
-        function removeButton() {
-            cart.forEach(function (cartItem) {
-                const element = document.createElement('div');
-                element.innerText = cartItem.title + ' ' + cartItem.price + ' kr';
-                //create button to each product that adds it to cart;
-                const removeFromCartButton = document.createElement('button');
-                //text on button
-                removeFromCartButton.innerText = 'Remove';
-                //when clicked on addToCart runs
-                removeFromCartButton.onclick = deleteItem;
-                //connection buttons for each object
-                //removeFromCartButton.id = cartItem.id;
-                element.appendChild(removeFromCartButton);
-
-                const cartShow = document.getElementById('cart');
-                cartShow.appendChild(element);
-            })
-        }
+      
 
         showBudget();
         showMenu();
