@@ -11,38 +11,153 @@
 <body>
     <h1>HELLO</h1>
 
-    <div id="menuShow"></div>
-    <div id="cart">CART:</div>
+    <div id="budget">
+        <h2>Budget: </h2>
+    </div>
+    <hr>
+    <div id="menuShow">
+        <h2>Menu: </h2>
+    </div>
+    <hr>
+    <div id="cart">
+        <h2>Cart: </h2>
+    </div>
+    <hr>
+    <div id="orderNumber">
+        <h2></h2>
+    </div>
 
     <script>
+        //from localstorage
+        let budget = localStorage.getItem('budgetKey')
+        let cart = [];
+        let sum = 0;
 
-        let cart = [{
-            title: 'McBa342432con',
-            price: 30,
-            id: 'idMcbacon'
-        }];
-
+        let orderNumber = localStorage.getItem('orderNumberKey')
         const items = [{
             title: 'McBacon',
             price: 30,
-            id: 'idMcbacon'
+            id: 'idMcbacon',
+            volume: 0
         }, {
             title: 'Cheese Burger',
             price: 13,
-            id: 'idCheeseburger'
+            id: 'idCheeseburger',
+            volume: 0
         }, {
             title: 'Big Tasty Bacon',
             price: 45,
-            id: 'idBigtastybacon'
+            id: 'idBigtastybacon',
+            volume: 0
         }, {
             title: 'McChicken',
             price: 25,
-            id: 'idMcchicken'
+            id: 'idMcchicken',
+            volume: 0
         }]
+        function showOrderNumber(){
+            document.getElementById('orderNumber').innerHTML = 'OrderNo:  ' + orderNumber;
+        }
 
         render();
 
+        function showBudget() {
+            document.getElementById("budget").innerHTML = 'Budget: ' + budget + ' kr.';
+        }
+
+        function showCart() {
+            document.getElementById('cart').innerHTML = ' ';
+
+            //for each object in the array
+            cart.forEach(function (cartItem) {
+                const element = document.createElement('div');
+                element.innerText = cartItem.title + ' ' + cartItem.price + ' kr';
+
+                console.log(cartItem)
+
+                //create button to each product that adds it to cart;
+                const removeFromCartButton = document.createElement('button');
+                //text on button
+                removeFromCartButton.innerText = 'Delete';
+                //when clicked on addToCart runs
+                removeFromCartButton.onclick = removeItem;
+                //connection buttons for each object
+                removeFromCartButton.id = cartItem.id;
+                element.appendChild(removeFromCartButton);
+
+                const menuShow = document.getElementById('cart');
+                menuShow.appendChild(element);
+            });
+
+        }
+
+        function removeButton() {
+            cart.forEach(function (cartItem) {
+                const element = document.createElement('div');
+                element.innerText = cartItem.title + ' ' + cartItem.price + ' kr';
+
+                //console.log(cartItem)
+
+                //create button to each product that adds it to cart;
+                const removeFromCartButton = document.createElement('button');
+                //text on button
+                removeFromCartButton.innerText = 'Remove';
+                //when clicked on addToCart runs
+                removeFromCartButton.onclick = removeItem;
+                //connection buttons for each object
+                //removeFromCartButton.id = cartItem.id;
+                element.appendChild(removeFromCartButton);
+
+                const cartShow = document.getElementById('cart');
+                cartShow.appendChild(element);
+
+            })
+        }
+
+        /* function removeItem(idToDelete) {
+
+            cart = cart.filter(function (item) {
+                if (item.id === idToDelete) {
+                    return false;
+                } else {
+                    return true;
+                }
+            })
+            //saveCart();
+
+        }
+
+        function deleteItem(event) {
+            //target is targeting the hardware button that was clicked, fx a mouseclick
+            const deleteButton = event.target;
+            const idToDelete = deleteButton.id;
+            removeTodo(idToDelete);
+            render();
+        } */
+
+        function removeItem(event) {
+            cart.forEach(function (cartItem) {
+                const deleteButton = event.target;
+                const idToDelete = deleteButton.id;
+                if (cartItem.id === idToDelete) {
+                    cartItem.volume = 0;
+                    render();
+                }
+            })
+        }
+
         function render() {
+            //render budget
+            showBudget();
+            showMenu();
+            showCart();
+            showOrderNumber();
+            //saveCart();
+        }
+
+        function showMenu() {
+            document.getElementById('menuShow').innerHTML = ' ';
+
             //for each object in the array
             items.forEach(function (item) {
                 const element = document.createElement('div');
@@ -64,48 +179,44 @@
                 menuShow.appendChild(element);
             });
         }
-        
-        //FRA MATHIAS
-        function addItem(event) {
 
+        function saveCart() {
+            localStorage.setItem('cartKey', JSON.stringify(cart))
+        }
+
+        /* function addItem(event) {
             document.getElementById('menuShow').innerHTML = '';
-            //laver et foreach loop til print
+            //loops each item to find
             items.forEach(function (item) {
-                //gør klar til samling af valgt varer med sortiment
                 addToCartButton = event.target;
                 const idToAdd = addToCartButton.id;
                 //if object id and button id matches, then push to cart and render()
                 if (item.id === idToAdd) {
                     cart.push(item);
                     item.volume++;
-                    
                     render();
                 }
             });
+        } */
+
+        function addItem(event) {
+            items.forEach(function (item) {
+                const id = ' ' + new Date().getTime();
+                const addButton = event.target;
+                const idToAdd = addButton.id;
+
+                if (item.id == idToAdd) {
+                    cart.push({
+                        title: item.title,
+                        price: item.price,
+                        id: id,
+                        volume: item.volume + 1
+                    });
+                    item.volume++;
+                    render();
+                }
+            })
         }
-
-        function addToCart(item) {
-
-           
-
-            const button = document.getElementById(item.id);
-
-            //creates id for each product added to cart
-            const idNumber = '' + new Date().getTime();
-            //push onto the array
-            console.log(item.title, item.price, idNumber);
-
-            cart.push({
-                title: item.title,
-                price: item.price,
-                id: idNumber,
-            });
-
-            console.log(cart)
-
-
-        }
-
     </script>
 </body>
 
