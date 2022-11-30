@@ -10,31 +10,40 @@
 
 <body>
     <h1>Place your order</h1>
-
-    <button onclick="cancelOrder()">Cancel order</button>
+    <button onclick="cancelOrder()" style="float: right;">Cancel order</button>
+    
 
     <div id="budget">
-        <h2>Budget: </h2>
     </div>
     <hr>
+    <h3>Menu: </h3>
     <div id="menuShow">
-        <h2>Menu: </h2>
     </div>
     <hr>
+    <h3>Cart: </h3>
     <div id="cart">
-
     </div>
-    <hr>
-    <div id="totalSum"></div><button>Confirm & Pay</button>
+    <br>
+    <div id="totalSum"></div><button onclick="confirmOrderButton()">Confirm & Pay</button>
     <hr>
     <div id="orderNumber">
     </div>
+    <hr>
+    <div id="receipt"></div>
+    <div id="inTotal"></div>
+    <div id="newWalletSum"></div>
+    <div id="exit"></div>
+    <hr>
+    <div id="dailyIncome" type="number"></div>
+
 
     <script>
         //from localstorage
         let budget = localStorage.getItem('budgetKey')
         let cart = [];
         let sum = 0;
+        let dailyIncome = 0;
+        dailyIncome = localStorage.getItem('dailyIncomeKey')
 
         let orderNumber = localStorage.getItem('orderNumberKey')
         const items = [{
@@ -57,6 +66,56 @@
             price: 25,
             id: 'idMcchicken',
             volume: 0
+        }, {
+            title: 'French Fries',
+            price: 15,
+            id: 'idFrenchFries',
+            volume: 0
+        }, {
+            title: 'McNuggets 20pcs',
+            price: 50,
+            id: 'idMcNuggets',
+            volume: 0
+        }, {
+            title: 'Chili Cheese',
+            price: 15,
+            id: 'idChiliCheese',
+            volume: 0
+        }, {
+            title: 'Soft Ice',
+            price: 20,
+            id: 'idSoftIce',
+            volume: 0
+        }, {
+            title: 'Apple Pie',
+            price: 10,
+            id: 'idApplePie',
+            volume: 0
+        }, {
+            title: 'Candy',
+            price: 15,
+            id: 'idCandy',
+            volume: 0
+        }, {
+            title: 'Cola',
+            price: 25,
+            id: 'idCola',
+            volume: 0
+        }, {
+            title: 'Fanta',
+            price: 25,
+            id: 'idFanta',
+            volume: 0
+        }, {
+            title: 'Sprite',
+            price: 25,
+            id: 'idSprite',
+            volume: 0
+        }, {
+            title: 'Faxe Kondi',
+            price: 25,
+            id: 'idFaxeKondi',
+            volume: 0
         }]
         function showOrderNumber() {
             document.getElementById('orderNumber').innerHTML = 'OrderNo:  ' + orderNumber;
@@ -65,11 +124,11 @@
         render();
 
         function showBudget() {
-            document.getElementById("budget").innerHTML = 'Budget: ' + budget + ' kr.';
+            document.getElementById("budget").innerHTML = ' ' + budget + ' kr.';
         }
 
         function showCart() {
-            document.getElementById('cart').innerHTML = ' Cart: ';
+            document.getElementById('cart').innerHTML = ' ';
             document.getElementById('totalSum').innerHTML = 'In Total: ' + sum + ' kr.';
 
             //for each object in the array
@@ -81,7 +140,7 @@
                 //text on button
                 removeFromCartButton.innerText = 'Delete';
                 //when clicked on addToCart runs
-                removeFromCartButton.onclick = removeItem;
+                removeFromCartButton.onclick = deleteItem;
                 //connection buttons for each object
                 removeFromCartButton.id = cartItem.id;
                 element.appendChild(removeFromCartButton);
@@ -89,20 +148,39 @@
                 const cartShow = document.getElementById('cart');
                 cartShow.appendChild(element);
             });
-
         }
 
         //to confirm and pay;
-        function confirmOrderButton(){
-            const confirmButton = document.createElement('button');
-            confirmButton.innerText = 'Confirm & Pay';
-            //confirmButton.onclick = alert('hi');
-            element.appendChild(confirmButton);
-            
-            const confirmShow = document.getElementById('totalSum');
-            confirmShow.appendChild(confirmButton);
+        function confirmOrderButton() {
+            orderNumber++
+            localStorage.setItem('orderNumberKey', JSON.parse(orderNumber));
+            printReceipt();
+            showIncome();
+        }
 
-            orderNumber++;
+        function showIncome() {
+            console.log(sum)
+            sum += dailyIncome;
+            console.log(dailyIncome)
+            localStorage.setItem('dailyIncomeKey', dailyIncome);
+
+            document.getElementById('dailyIncome').innerHTML = 'Daily Income:  ' + dailyIncome;
+        }
+
+        function printReceipt() {
+            //document.getElementById('receipt').innerHTML = '';
+            document.getElementById('inTotal').innerHTML = ' In Total ' + sum + ' kr.';
+            document.getElementById('newWalletSum').innerHTML = 'Updated Wallet: ' + (budget - sum) + ' kr.';
+            document.getElementById('dailyIncome').innerHTML = 'Daily Income' + (dailyIncome) + 'kr.'
+
+            //for each object in the array
+            cart.forEach(function (cartItem) {
+                const element = document.createElement('div');
+                element.innerText = cartItem.title + ' ' + cartItem.price + ' kr';
+
+                const cartShow = document.getElementById('receipt');
+                cartShow.appendChild(element);
+            });
         }
 
         //maybe this should delete instead of removebutton
@@ -115,29 +193,13 @@
                 //text on button
                 removeFromCartButton.innerText = 'Remove';
                 //when clicked on addToCart runs
-                removeFromCartButton.onclick = removeItem;
+                removeFromCartButton.onclick = deleteItem;
                 //connection buttons for each object
                 //removeFromCartButton.id = cartItem.id;
                 element.appendChild(removeFromCartButton);
 
                 const cartShow = document.getElementById('cart');
                 cartShow.appendChild(element);
-
-            })
-        }
-
-
-        function removeItem(event) {
-            console.log(event.target)
-            cart.forEach(function (cartItem) {
-                const deleteButton = event.target;
-                const idToDelete = deleteButton.id;
-                if (cartItem.id === idToDelete) {
-                    cartItem.volume--;
-                    saveCart();
-                    sum -= cartItem.price;
-                    render();
-                }
             })
         }
 
@@ -146,11 +208,8 @@
         showOrderNumber();
 
         function render() {
-            //render budget
-
             showCart();
-
-            //saveCart();
+            saveCart();
         }
 
         function showMenu() {
@@ -200,48 +259,29 @@
             })
         }
 
-        function cancelOrder(){
-            console.log(orderNumber);
+        function cancelOrder() {
             orderNumber--;
-            console.log(orderNumber);
             location.replace('index.html');
         }
-           /* function removeItem(idToDelete) {
-
-   cart = cart.filter(function (item) {
-       if (item.id === idToDelete) {
-           return false;
-       } else {
-           return true;
-       }
-   })
-   //saveCart();
-
-}
-
-function deleteItem(event) {
-   //target is targeting the hardware button that was clicked, fx a mouseclick
-   const deleteButton = event.target;
-   const idToDelete = deleteButton.id;
-   removeTodo(idToDelete);
-   render();
-} */
-
-        /* function addItem(event) {
-            document.getElementById('menuShow').innerHTML = '';
-            //loops each item to find
-            items.forEach(function (item) {
-                addToCartButton = event.target;
-                const idToAdd = addToCartButton.id;
-                //if object id and button id matches, then push to cart and render()
-                if (item.id === idToAdd) {
-                    cart.push(item);
-                    item.volume++;
-                    render();
+        function removeItem(idToDelete) {
+            cart = cart.filter(function (item) {
+                
+                if (item.id === idToDelete) {
+                    return false;
+                } else {
+                    return true;
                 }
-            });
-        } */
-
+            })
+            saveCart();
+        }
+        function deleteItem(event) {
+            //target is targeting the hardware button that was clicked, fx a mouseclick
+            const deleteButton = event.target;
+            const idToDelete = deleteButton.id;
+            removeItem(idToDelete);
+            
+            render();
+        }
     </script>
 </body>
 

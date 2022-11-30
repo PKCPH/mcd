@@ -14,7 +14,7 @@
 
     <div style="text-align:center">
         <h2>Indtast dit budget</h2>
-        <input id="budgetID" type="number " />
+        <input id="budgetID" type="number" />
         <button onclick="addBudget()">OK</button>
     </div>
 
@@ -28,11 +28,7 @@
         const budget = textboxInput.value;
 
         //saves budget input
-        //localStorage.setItem('budgetKey', JSON.stringify(textbox));
         localStorage.setItem('budgetKey', budget);
-        
-        console.log(localStorage.getItem('budgetKey'));
-        
         localStorage.setItem('orderNumberKey', orderNumber);
         location.replace('menu.html');
     }
