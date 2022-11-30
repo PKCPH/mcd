@@ -14,7 +14,7 @@
 
     <div style="text-align:center">
         <h2>Indtast dit budget</h2>
-        <input id="budgetID" type="text" />
+        <input id="budgetID" type="number " />
         <button onclick="addBudget()">OK</button>
     </div>
 
@@ -32,14 +32,10 @@
         localStorage.setItem('budgetKey', budget);
         
         console.log(localStorage.getItem('budgetKey'));
-        orderNumber++;
+        
         localStorage.setItem('orderNumberKey', orderNumber);
         location.replace('menu.html');
     }
 </script>
-
-
 </body>
-
-
 </html>

@@ -9,7 +9,9 @@
 </head>
 
 <body>
-    <h1>HELLO</h1>
+    <h1>Place your order</h1>
+
+    <button onclick="cancelOrder()">Cancel order</button>
 
     <div id="budget">
         <h2>Budget: </h2>
@@ -20,11 +22,12 @@
     </div>
     <hr>
     <div id="cart">
-        <h2>Cart: </h2>
+
     </div>
     <hr>
+    <div id="totalSum"></div><button>Confirm & Pay</button>
+    <hr>
     <div id="orderNumber">
-        <h2></h2>
     </div>
 
     <script>
@@ -55,7 +58,7 @@
             id: 'idMcchicken',
             volume: 0
         }]
-        function showOrderNumber(){
+        function showOrderNumber() {
             document.getElementById('orderNumber').innerHTML = 'OrderNo:  ' + orderNumber;
         }
 
@@ -66,15 +69,13 @@
         }
 
         function showCart() {
-            document.getElementById('cart').innerHTML = ' ';
+            document.getElementById('cart').innerHTML = ' Cart: ';
+            document.getElementById('totalSum').innerHTML = 'In Total: ' + sum + ' kr.';
 
             //for each object in the array
             cart.forEach(function (cartItem) {
                 const element = document.createElement('div');
                 element.innerText = cartItem.title + ' ' + cartItem.price + ' kr';
-
-                console.log(cartItem)
-
                 //create button to each product that adds it to cart;
                 const removeFromCartButton = document.createElement('button');
                 //text on button
@@ -85,19 +86,30 @@
                 removeFromCartButton.id = cartItem.id;
                 element.appendChild(removeFromCartButton);
 
-                const menuShow = document.getElementById('cart');
-                menuShow.appendChild(element);
+                const cartShow = document.getElementById('cart');
+                cartShow.appendChild(element);
             });
 
         }
 
+        //to confirm and pay;
+        function confirmOrderButton(){
+            const confirmButton = document.createElement('button');
+            confirmButton.innerText = 'Confirm & Pay';
+            //confirmButton.onclick = alert('hi');
+            element.appendChild(confirmButton);
+            
+            const confirmShow = document.getElementById('totalSum');
+            confirmShow.appendChild(confirmButton);
+
+            orderNumber++;
+        }
+
+        //maybe this should delete instead of removebutton
         function removeButton() {
             cart.forEach(function (cartItem) {
                 const element = document.createElement('div');
                 element.innerText = cartItem.title + ' ' + cartItem.price + ' kr';
-
-                //console.log(cartItem)
-
                 //create button to each product that adds it to cart;
                 const removeFromCartButton = document.createElement('button');
                 //text on button
@@ -114,44 +126,30 @@
             })
         }
 
-        /* function removeItem(idToDelete) {
-
-            cart = cart.filter(function (item) {
-                if (item.id === idToDelete) {
-                    return false;
-                } else {
-                    return true;
-                }
-            })
-            //saveCart();
-
-        }
-
-        function deleteItem(event) {
-            //target is targeting the hardware button that was clicked, fx a mouseclick
-            const deleteButton = event.target;
-            const idToDelete = deleteButton.id;
-            removeTodo(idToDelete);
-            render();
-        } */
 
         function removeItem(event) {
+            console.log(event.target)
             cart.forEach(function (cartItem) {
                 const deleteButton = event.target;
                 const idToDelete = deleteButton.id;
                 if (cartItem.id === idToDelete) {
-                    cartItem.volume = 0;
+                    cartItem.volume--;
+                    saveCart();
+                    sum -= cartItem.price;
                     render();
                 }
             })
         }
 
+        showBudget();
+        showMenu();
+        showOrderNumber();
+
         function render() {
             //render budget
-            showBudget();
-            showMenu();
+
             showCart();
-            showOrderNumber();
+
             //saveCart();
         }
 
@@ -162,9 +160,6 @@
             items.forEach(function (item) {
                 const element = document.createElement('div');
                 element.innerText = item.title + ' ' + item.price + ' kr';
-
-                console.log(item)
-
                 //create button to each product that adds it to cart;
                 const addToCartButton = document.createElement('button');
                 //text on button
@@ -184,6 +179,54 @@
             localStorage.setItem('cartKey', JSON.stringify(cart))
         }
 
+        function addItem(event) {
+            items.forEach(function (item) {
+                const id = ' ' + new Date().getTime();
+                const addButton = event.target;
+                const idToAdd = addButton.id;
+
+                if (item.id == idToAdd) {
+                    cart.push({
+                        title: item.title,
+                        price: item.price,
+                        id: id,
+                        volume: item.volume + 1
+                    });
+                    item.volume++;
+                    //adds price to sum
+                    sum += item.price;
+                    render();
+                }
+            })
+        }
+
+        function cancelOrder(){
+            console.log(orderNumber);
+            orderNumber--;
+            console.log(orderNumber);
+            location.replace('index.html');
+        }
+           /* function removeItem(idToDelete) {
+
+   cart = cart.filter(function (item) {
+       if (item.id === idToDelete) {
+           return false;
+       } else {
+           return true;
+       }
+   })
+   //saveCart();
+
+}
+
+function deleteItem(event) {
+   //target is targeting the hardware button that was clicked, fx a mouseclick
+   const deleteButton = event.target;
+   const idToDelete = deleteButton.id;
+   removeTodo(idToDelete);
+   render();
+} */
+
         /* function addItem(event) {
             document.getElementById('menuShow').innerHTML = '';
             //loops each item to find
@@ -199,24 +242,6 @@
             });
         } */
 
-        function addItem(event) {
-            items.forEach(function (item) {
-                const id = ' ' + new Date().getTime();
-                const addButton = event.target;
-                const idToAdd = addButton.id;
-
-                if (item.id == idToAdd) {
-                    cart.push({
-                        title: item.title,
-                        price: item.price,
-                        id: id,
-                        volume: item.volume + 1
-                    });
-                    item.volume++;
-                    render();
-                }
-            })
-        }
     </script>
 </body>
 
